@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="edge-g" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#8b5cf6" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Edges -->
+  <g stroke="url(#edge-g)" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path d="M 36,64 C 52,64 52,34 68,34"/>
+    <path d="M 36,64 C 52,64 52,64 68,64"/>
+    <path d="M 36,64 C 52,64 52,94 68,94"/>
+    <path d="M 80,34 C 90,34 90,50 100,50"/>
+    <path d="M 80,64 C 90,64 90,78 100,78"/>
+    <path d="M 80,94 C 90,94 90,78 100,78"/>
+  </g>
+
+  <!-- Root node -->
+  <circle cx="36" cy="64" r="12" fill="url(#grad)"/>
+  <circle cx="36" cy="64" r="8" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Depth-1 nodes -->
+  <circle cx="74" cy="34" r="8" fill="#f59e0b" opacity="0.9"/>
+  <circle cx="74" cy="64" r="8" fill="#6b7280" opacity="0.9"/>
+  <circle cx="74" cy="94" r="8" fill="#ef4444" opacity="0.9"/>
+
+  <!-- Depth-2 nodes -->
+  <circle cx="100" cy="50" r="5.5" fill="#22c55e" opacity="0.6"/>
+  <circle cx="100" cy="78" r="5.5" fill="#f59e0b" opacity="0.6"/>
+
+  <!-- Tx arrow hint on root -->
+  <path d="M 30,60 L 36,64 L 30,68" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+</svg>

@@ -1,9 +1,13 @@
-# TxGraph
+<p align="center">
+  <img src="docs/public/logo.svg" alt="TxGraph" width="80" />
+</p>
 
-Blockchain transaction tracing graph components for React. Trace, visualize, and analyze on-chain transaction flows.
+<h1 align="center">TxGraph</h1>
+
+<p align="center">Blockchain transaction tracing graph components for React.<br/>Trace, visualize, and analyze on-chain transaction flows.</p>
 
 <p align="center">
-  <img src="docs/public/hero-features.svg" alt="TxGraph feature overview" width="720" />
+  <img src="docs/public/hero-features.svg" alt="TxGraph feature overview" width="800" />
 </p>
 
 ## Features
