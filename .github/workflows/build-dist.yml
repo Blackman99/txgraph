@@ -26,15 +26,13 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          cache-dependency-path: packages/react/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: packages/react
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        working-directory: packages/react
-        run: pnpm build
+        run: pnpm --filter @trustin/txgraph build
 
       - name: Commit dist
         run: |
