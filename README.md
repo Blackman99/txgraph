@@ -68,7 +68,7 @@ pnpm dev:docs
 
 | Layer | Description | Link |
 |-------|-------------|------|
-| **Layer 1** | Use TrustIn Explorer at [v2.trustin.info](https://v2.trustin.info) | [Guide](https://blackman99.github.io/txgraph/guide/layer1-product) |
+| **Layer 1** | Use TrustIn Online Explorer at [v2.trustin.info](https://v2.trustin.info/explore) | [Guide](https://blackman99.github.io/txgraph/guide/layer1-product) |
 | **Layer 2** | AI Agent API — self-register and trace addresses | [Guide](https://blackman99.github.io/txgraph/guide/layer2-agent) |
 | **Layer 3** | Run the demo locally with your own API key | [Guide](https://blackman99.github.io/txgraph/guide/layer3-demo) |
 | **Layer 4** | Install `@trustin/txgraph` and build your own UI | [Guide](https://blackman99.github.io/txgraph/guide/layer4-component) |
