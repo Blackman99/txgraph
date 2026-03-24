@@ -12,7 +12,7 @@ Run TxGraph as a local Vite app connected to the TrustIn API. Ideal for evaluati
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/trustin-info/txgraph.git
+git clone https://github.com/Blackman99/txgraph.git
 cd txgraph
 
 # 2. Install dependencies

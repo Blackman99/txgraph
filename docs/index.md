@@ -10,7 +10,7 @@ hero:
       link: /guide/layer1-product
     - theme: alt
       text: View on GitHub
-      link: https://github.com/trustin-info/txgraph
+      link: https://github.com/Blackman99/txgraph
 
 features:
   - icon: 🌐

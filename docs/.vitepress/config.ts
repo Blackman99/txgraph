@@ -10,7 +10,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/layer1-product' },
       { text: 'API', link: '/api/components' },
-      { text: 'GitHub', link: 'https://github.com/trustin-info/txgraph' },
+      { text: 'GitHub', link: 'https://github.com/Blackman99/txgraph' },
     ],
     sidebar: [
       {
@@ -37,7 +37,7 @@ export default defineConfig({
       copyright: 'Copyright © 2024 TrustIn',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/trustin-info/txgraph' },
+      { icon: 'github', link: 'https://github.com/Blackman99/txgraph' },
     ],
   },
 })
