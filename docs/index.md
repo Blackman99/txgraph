@@ -4,6 +4,9 @@ hero:
   name: TxGraph
   text: Blockchain Transaction Tracing
   tagline: Trace, visualize, and analyze on-chain transaction flows. Open source, AI-agent friendly.
+  image:
+    src: /hero-features.svg
+    alt: TxGraph — transaction graph visualization with risk scoring, path highlighting, and multi-renderer support
   actions:
     - theme: brand
       text: Get Started
