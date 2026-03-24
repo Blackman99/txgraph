@@ -179,7 +179,7 @@ function ExplorerNode({ data, id }: NodeProps) {
               whiteSpace: 'nowrap',
             }}
           >
-            {primaryTag.primaryCategory || primaryTag.name}
+            {primaryTag.primary_category || primaryTag.primaryCategory || primaryTag.name}
           </span>
         )}
       </div>

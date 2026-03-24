@@ -141,7 +141,7 @@ function ExplorerNode({ data, id }) {
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap"
               },
-              children: primaryTag.primaryCategory || primaryTag.name
+              children: primaryTag.primary_category || primaryTag.primaryCategory || primaryTag.name
             }
           )
         ] }),
@@ -683,7 +683,7 @@ function GraphExplorerSigma({
       context.fillText(data.label, data.x, data.y - (nodeRadius > 14 ? 4 : 1));
       const nodeInfo = data.nodeData;
       if (nodeInfo && !isDimmedNode && nodeRadius >= 14) {
-        const tag = nodeInfo.tags?.[0]?.secondaryCategory || nodeInfo.tags?.[0]?.primaryCategory || nodeInfo.tags?.[0]?.name || "";
+        const tag = nodeInfo.tags?.[0]?.secondary_category || nodeInfo.tags?.[0]?.secondaryCategory || nodeInfo.tags?.[0]?.primary_category || nodeInfo.tags?.[0]?.primaryCategory || nodeInfo.tags?.[0]?.name || "";
         const riskStr = nodeInfo.risk_level !== "unknown" ? nodeInfo.risk_level : "";
         const subLabel = tag || riskStr;
         if (subLabel) {

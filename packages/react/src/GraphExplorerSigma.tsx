@@ -135,7 +135,9 @@ export default function GraphExplorerSigma({
       const nodeInfo = (data as Record<string, unknown>).nodeData as TxNode | undefined
       if (nodeInfo && !isDimmedNode && nodeRadius >= 14) {
         const tag =
+          nodeInfo.tags?.[0]?.secondary_category ||
           nodeInfo.tags?.[0]?.secondaryCategory ||
+          nodeInfo.tags?.[0]?.primary_category ||
           nodeInfo.tags?.[0]?.primaryCategory ||
           nodeInfo.tags?.[0]?.name ||
           ''
