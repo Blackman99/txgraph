@@ -73,6 +73,8 @@ export class GraphBuilder {
     const nodes = new Map<string, TxNode>()
     const allEdges: TxEdge[] = []
     const visited = new Set<string>()
+    const arrivalTimestamps = new Map<string, number>()
+    arrivalTimestamps.set(rootAddress, 0)
 
     const rootNode: TxNode = {
       address: rootAddress,
@@ -121,7 +123,12 @@ export class GraphBuilder {
           page++
         }
 
-        const edges = aggregateTransactions(allTxs, this.options.direction)
+        const arrivalTime = arrivalTimestamps.get(addr) ?? 0
+        const filteredTxs = arrivalTime > 0
+          ? allTxs.filter((tx) => tx.timestamp >= arrivalTime)
+          : allTxs
+
+        const edges = aggregateTransactions(filteredTxs, this.options.direction)
         allEdges.push(...edges)
 
         const node = nodes.get(addr)
@@ -149,6 +156,9 @@ export class GraphBuilder {
             })
             nextLayer.push(neighbor)
             neighborCount++
+            if (edge.first_timestamp != null) {
+              arrivalTimestamps.set(neighbor, edge.first_timestamp)
+            }
           }
         }
 
@@ -213,7 +223,16 @@ export class GraphBuilder {
       page++
     }
 
-    const edges = aggregateTransactions(allTxs, this.options.direction)
+    // Derive arrival time from incoming edges in the existing graph
+    const incomingEdges = existing.edges.filter((e) => e.to === address)
+    const arrivalTime = incomingEdges.length > 0
+      ? Math.min(...incomingEdges.map((e) => e.first_timestamp ?? e.last_timestamp))
+      : 0
+    const filteredTxs = arrivalTime > 0
+      ? allTxs.filter((tx) => tx.timestamp >= arrivalTime)
+      : allTxs
+
+    const edges = aggregateTransactions(filteredTxs, this.options.direction)
     const existingAddrs = new Set(existing.nodes.map((n) => n.address))
     const sourceNode = existing.nodes.find((n) => n.address === address)
     const baseDepth = sourceNode ? sourceNode.depth : 0

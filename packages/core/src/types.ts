@@ -33,6 +33,7 @@ export interface TxEdge {
   amount: string
   formatted_amount: string
   last_timestamp: number
+  first_timestamp?: number
   tx_count?: number
   token?: string
 }

@@ -8,6 +8,7 @@ interface AggregationGroup {
   totalValue: bigint
   txCount: number
   lastTimestamp: number
+  firstTimestamp: number
   tokenSymbol?: string
   tokenDecimal?: number
 }
@@ -36,6 +37,7 @@ export function aggregateTransactions(
       existing.totalValue += value
       existing.txCount++
       existing.lastTimestamp = Math.max(existing.lastTimestamp, tx.timestamp)
+      existing.firstTimestamp = Math.min(existing.firstTimestamp, tx.timestamp)
       if (tx.tokenSymbol) existing.tokenSymbol = tx.tokenSymbol
       if (tx.tokenDecimal != null) existing.tokenDecimal = tx.tokenDecimal
     } else {
@@ -45,6 +47,7 @@ export function aggregateTransactions(
         totalValue: value,
         txCount: 1,
         lastTimestamp: tx.timestamp,
+        firstTimestamp: tx.timestamp,
         tokenSymbol: tx.tokenSymbol,
         tokenDecimal: tx.tokenDecimal,
       })
@@ -62,6 +65,7 @@ export function aggregateTransactions(
       amount: group.totalValue.toString(),
       formatted_amount: formatAmount(group.totalValue.toString(), decimals, symbol),
       last_timestamp: group.lastTimestamp,
+      first_timestamp: group.firstTimestamp,
       tx_count: group.txCount,
       token: group.tokenSymbol,
     }
