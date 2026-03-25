@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
-      - 'packages/react/src/**'
+      - 'packages/**'
+      - 'examples/**'
 
 jobs:
   deploy:
@@ -28,6 +29,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Build demo for docs
+        run: pnpm build:demo-for-docs
 
       - name: Build docs
         run: pnpm --filter docs build
