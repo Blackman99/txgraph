@@ -10,6 +10,8 @@
   <img src="docs/public/hero-features.svg" alt="TxGraph feature overview" width="800" />
 </p>
 
+## [Live Demo](https://blackman99.github.io/txgraph/demo/)
+
 ## Features
 
 - **Risk-scored nodes** — color-coded risk levels (high / medium / low / unknown) with entity tags
