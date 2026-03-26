@@ -10,27 +10,37 @@ export interface EtherscanAdapterConfig {
   apiKey?: string
   /** Base URL — change for BSC, Polygon, etc. Defaults to Ethereum mainnet. */
   baseUrl?: string
+  /** Display name for the adapter (e.g. 'BscScan', 'PolygonScan'). Defaults to 'Etherscan'. */
+  adapterName?: string
+  /** Native token symbol (e.g. 'BNB', 'MATIC'). Defaults to 'ETH'. */
+  nativeToken?: string
+  /** Chain name for capabilities (e.g. 'BSC', 'Polygon'). Defaults to 'Ethereum'. */
+  chainName?: string
 }
 
 const DEFAULT_BASE_URL = 'https://api.etherscan.io'
 
 export class EtherscanAdapter implements DataSource {
-  readonly name = 'Etherscan'
-  readonly capabilities: AdapterCapabilities = {
-    hasRiskScoring: false,
-    hasAddressTags: false,
-    returnsPrebuiltGraph: false,
-    supportedChains: ['Ethereum'],
-    rateLimit: 2,
-  }
+  readonly name: string
+  readonly capabilities: AdapterCapabilities
 
   private apiKey: string
   private baseUrl: string
+  private nativeToken: string
   private limiter: RateLimiter
 
   constructor(config: EtherscanAdapterConfig = {}) {
     this.apiKey = config.apiKey || ''
     this.baseUrl = config.baseUrl || DEFAULT_BASE_URL
+    this.nativeToken = config.nativeToken || 'ETH'
+    this.name = config.adapterName || 'Etherscan'
+    this.capabilities = {
+      hasRiskScoring: false,
+      hasAddressTags: false,
+      returnsPrebuiltGraph: false,
+      supportedChains: [config.chainName || 'Ethereum'],
+      rateLimit: config.apiKey ? 5 : 2,
+    }
     this.limiter = new RateLimiter(config.apiKey ? 5 : 2)
   }
 
@@ -96,7 +106,7 @@ export class EtherscanAdapter implements DataSource {
         from: tx.from.toLowerCase(),
         to: tx.to.toLowerCase(),
         value: tx.value,
-        tokenSymbol: 'ETH',
+        tokenSymbol: this.nativeToken,
         tokenDecimal: 18,
         timestamp: Number(tx.timeStamp),
       }))
