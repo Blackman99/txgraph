@@ -600,7 +600,6 @@ export default function App() {
               <RealTimeManager
                 watchedAddresses={watchList}
                 onUpdate={handleRealTimeUpdate}
-                enabled={realTimeEnabled}
               />
             </div>
           </div>
