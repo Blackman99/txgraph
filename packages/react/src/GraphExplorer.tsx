@@ -22,6 +22,7 @@ import {
 import '@xyflow/react/dist/style.css'
 import { AlertTriangle, Plus, Loader2 } from 'lucide-react'
 import Dagre from '@dagrejs/dagre'
+import ExportToolbar from './components/ExportToolbar'
 import type { TxNode, TxEdge, TxGraphStats, GraphExplorerProps } from './types'
 
 // ─── Dark mode hook ───────────────────────────────────────────────────────────
@@ -565,6 +566,7 @@ export default function GraphExplorer({
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(flowEdges)
 
   const rfInstance = useRef<ReactFlowInstance | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const highlighted = flowNodes.map((n) => ({
@@ -608,7 +610,7 @@ export default function GraphExplorer({
   )
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
       <ExplorerCallbacksCtx.Provider value={ctxValue}>
         <ReactFlow
           nodes={nodes}
@@ -633,19 +635,27 @@ export default function GraphExplorer({
           />
 
           <Panel position="top-right">
-            <div
-              style={{
-                fontSize: 11,
-                color: isDark ? '#94a3b8' : '#64748b',
-                background: isDark ? '#1e293b' : '#ffffff',
-                border: `1px solid ${isDark ? 'rgba(51,65,85,0.5)' : 'rgba(203,213,225,0.8)'}`,
-                borderRadius: 6,
-                padding: '4px 10px',
-              }}
-            >
-              {stats
-                ? `${stats.total_nodes} nodes · ${stats.total_edges} edges`
-                : `${apiNodes.length} nodes · ${apiEdges.length} edges`}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <ExportToolbar
+                nodes={apiNodes}
+                edges={apiEdges}
+                stats={stats}
+                containerRef={containerRef}
+              />
+              <div
+                style={{
+                  fontSize: 11,
+                  color: isDark ? '#94a3b8' : '#64748b',
+                  background: isDark ? '#1e293b' : '#ffffff',
+                  border: `1px solid ${isDark ? 'rgba(51,65,85,0.5)' : 'rgba(203,213,225,0.8)'}`,
+                  borderRadius: 6,
+                  padding: '4px 10px',
+                }}
+              >
+                {stats
+                  ? `${stats.total_nodes} nodes · ${stats.total_edges} edges`
+                  : `${apiNodes.length} nodes · ${apiEdges.length} edges`}
+              </div>
             </div>
           </Panel>
         </ReactFlow>

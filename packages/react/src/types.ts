@@ -65,3 +65,11 @@ export interface GraphExplorerProps {
   onNodeDelete?: (address: string) => void
   className?: string
 }
+
+export interface ExportData {
+  nodes: TxNode[]
+  edges: TxEdge[]
+  stats?: TxGraphStats | null
+  timestamp: string
+  exportedBy: string
+}

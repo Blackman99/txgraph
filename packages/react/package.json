@@ -26,6 +26,8 @@
     "@xyflow/react": "^12",
     "graphology": "^0.25",
     "graphology-layout": "^0.6",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.441.0",
     "sigma": "^3.0.2"
   },
@@ -34,7 +36,17 @@
     "tsup": "^8",
     "typescript": "^5"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
-  "keywords": ["blockchain", "transaction", "graph", "aml", "crypto", "tracing", "react"]
+  "keywords": [
+    "blockchain",
+    "transaction",
+    "graph",
+    "aml",
+    "crypto",
+    "tracing",
+    "react"
+  ]
 }
