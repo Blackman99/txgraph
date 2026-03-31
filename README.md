@@ -14,13 +14,26 @@
 
 ## Features
 
+### 🎯 Core Visualization
 - **Risk-scored nodes** — color-coded risk levels (high / medium / low / unknown) with entity tags
 - **Path highlighting** — click any node to trace the fund flow from root, dimming unrelated edges
 - **Smooth bezier edges** — labeled with transfer amount, token, and timestamp (to the second)
 - **Two renderers** — ReactFlow (DOM-based, up to 500 nodes) and Sigma.js (WebGL, 500+ nodes)
 - **Dark / Light mode** — auto-detects `document.documentElement.classList` for `dark` class
 - **Interactive** — expand nodes on-demand, delete nodes, zoom / pan / fit-view
+
+### 📊 Advanced Analytics
+- **Smart search** — intelligent address/hash detection with real-time results
+- **Multi-dimensional filtering** — filter by risk, chain, depth, amount, and time ranges
+- **Cluster analysis** — AI-powered detection of exchanges, mixers, and suspicious patterns
+- **Anomaly detection** — identify unusual transaction patterns and potential risks
+- **Real-time monitoring** — WebSocket integration for live transaction updates
+
+### 🔄 Export & Integration
+- **Multi-format export** — PNG/SVG images, JSON/CSV data, comprehensive PDF reports
+- **Real-time alerts** — push notifications for high-risk transactions
 - **AI-agent friendly** — REST API with self-registration, MCP-compatible tool definitions
+- **Extensible** — modular architecture with TypeScript support
 
 ## Quick Start
 
@@ -29,8 +42,14 @@ pnpm add @trustin/txgraph
 ```
 
 ```tsx
-import { GraphExplorer } from '@trustin/txgraph'
+import { 
+  GraphExplorer, 
+  GraphControlPanel,
+  ClusterAnalysis,
+  RealTimeManager 
+} from '@trustin/txgraph'
 
+// Basic usage
 <GraphExplorer
   nodes={nodes}
   edges={edges}
@@ -39,6 +58,31 @@ import { GraphExplorer } from '@trustin/txgraph'
   onNodeExpand={(address) => fetchMore(address)}
   onNodeDelete={(address) => remove(address)}
 />
+
+// Advanced usage with search, filtering, and analytics
+<div style={{ display: 'flex', gap: '16px' }}>
+  <div style={{ flex: 1 }}>
+    <GraphExplorer nodes={nodes} edges={edges} stats={stats} />
+  </div>
+  <div style={{ width: '320px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <GraphControlPanel 
+      nodes={nodes} 
+      edges={edges}
+      onNodeSelect={setSelectedNode}
+      onFilterChange={setFilteredData}
+    />
+    <ClusterAnalysis 
+      nodes={nodes} 
+      edges={edges}
+      onClusterSelect={highlightCluster}
+    />
+    <RealTimeManager 
+      wsUrl="wss://api.example.com/ws"
+      watchedAddresses={watchList}
+      onUpdate={handleRealTimeUpdate}
+    />
+  </div>
+</div>
 ```
 
 ## Project Structure

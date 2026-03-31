@@ -48,21 +48,35 @@ VITE_TRONSCAN_API_KEY=your_tronscan_key
 ## Using the Demo
 
 1. **Enter an address** — Ethereum (0x…) or Tron (T…)
-2. **Select chain** — Ethereum or Tron
+2. **Select chain** — Ethereum or Tron  
 3. **Select data source** — TrustIn (with risk scoring) or On-Chain (Etherscan/Tronscan)
 4. **Choose direction** — Outflow / Inflow / All
 5. **Set date range** (optional) — filter by transaction date
-6. **Click Explore** — graph renders immediately
-7. **Toggle renderer** — switch between ReactFlow and Sigma.js
+6. **Click Explore** — graph renders with advanced features
 
-### Node Interactions
+### Advanced Features Available
+
+The local demo now includes all the latest TxGraph capabilities:
+
+- **🔍 Smart Search** — Search addresses, risk levels, entity tags, and transaction amounts
+- **🎛 Advanced Filters** — Multi-dimensional filtering by risk, chain, depth, amounts, and time
+- **📊 Export Options** — Export as PNG, SVG, JSON, CSV, or comprehensive PDF reports
+- **🧠 Cluster Analysis** — AI-powered detection of exchanges, mixers, and suspicious patterns
+- **⚡ Real-time Monitoring** — WebSocket integration for live transaction updates (when available)
+- **📈 Anomaly Detection** — Identify unusual patterns like rapid succession or round amounts
+
+### Interactions
 
 | Action | Result |
 |--------|--------|
 | Click node | Select (highlights path from root) |
 | Click **+** button | Expand node (load neighbors) |
 | Click **✕** button | Remove node from graph |
-| Click background | Deselect |
+| Search bar | Find specific addresses or patterns |
+| Filter panel | Narrow down visible data |
+| Export menu | Download graph in multiple formats |
+| Cluster panel | View detected entity clusters |
+| Click background | Deselect all |
 
 ## URL Deep-Link
 
@@ -111,11 +125,49 @@ The built files are in `examples/local-demo/dist/` — deploy to any static host
 
 ## Customizing
 
-The demo is intentionally simple. Common customizations:
+The demo provides a comprehensive foundation. Common customizations:
 
-- **Custom styling** — edit the inline styles in `App.tsx`
-- **Add authentication** — wrap with your own auth layer
-- **Multiple addresses** — extend the UI for batch exploration
-- **Export** — add JSON/CSV export of graph data
+### UI Customization
+- **Custom styling** — edit the inline styles in `App.tsx` or add CSS modules
+- **Layout changes** — modify the component arrangement and sizing
+- **Branding** — add your own logos and color schemes
+- **Dark mode** — implement custom dark/light theme switching
 
-For deeper integration, see [Layer 4: Build Your Own](/guide/layer4-component).
+### Functionality Extensions  
+- **Authentication** — wrap with your own auth layer and user management
+- **Multiple addresses** — extend the UI for batch exploration and comparison
+- **Custom data sources** — integrate with your own blockchain data APIs
+- **Advanced analytics** — add custom risk scoring and compliance rules
+- **Reporting** — extend export functionality with custom report templates
+
+### Real-time Features
+- **WebSocket configuration** — connect to your own real-time data feeds  
+- **Alert systems** — implement custom notification and alerting logic
+- **Dashboard integration** — embed into larger compliance or monitoring dashboards
+
+### Example Customizations
+
+```tsx
+// Custom theme colors
+const customTheme = {
+  primary: '#1e40af',
+  success: '#16a34a', 
+  warning: '#d97706',
+  danger: '#dc2626',
+  background: '#f8fafc'
+}
+
+// Custom risk scoring
+const customRiskLogic = (node: TxNode) => {
+  // Your custom risk assessment logic
+  return calculateCustomRisk(node)
+}
+
+// Custom export formats
+const exportToCustomFormat = (graph: TxGraph) => {
+  // Export to your internal systems
+  return convertToInternalFormat(graph)
+}
+```
+
+For deeper integration and full component documentation, see [Layer 4: Build Your Own](/guide/layer4-component) and [Examples](/guide/examples).

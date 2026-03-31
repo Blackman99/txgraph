@@ -18,7 +18,7 @@ hero:
 features:
   - icon: 🌐
     title: Try Live Demo
-    details: Instantly trace transactions in the browser — no setup required. Supports TrustIn API and on-chain data sources (Etherscan, Tronscan).
+    details: Instantly trace transactions with advanced search, filtering, and export capabilities. Real-time monitoring and AI-powered cluster analysis.
     link: /txgraph/demo/
     linkText: Open Demo
   - icon: 🤖
@@ -28,14 +28,24 @@ features:
     linkText: Agent Setup
   - icon: 💻
     title: Run Locally
-    details: Clone the repo and run TxGraph locally for full control. Connect to TrustIn API or use on-chain data via Etherscan/Tronscan.
+    details: Clone the repo and run TxGraph locally for full control. Includes search, filtering, real-time monitoring, and comprehensive export features.
     link: /guide/layer3-demo
     linkText: Setup Guide
   - icon: 🛠
     title: Build Your Own
-    details: Install @trustin/txgraph and integrate the graph components into your own app with your own data source.
+    details: Install @trustin/txgraph with advanced components for search, filtering, clustering, real-time updates, and multi-format export.
     link: /guide/layer4-component
     linkText: Component Docs
+  - icon: 🔍
+    title: Smart Analytics
+    details: AI-powered cluster detection identifies exchanges, mixers, and suspicious patterns. Anomaly detection for potential risks and compliance.
+    link: /guide/examples
+    linkText: View Examples  
+  - icon: 📊
+    title: Export & Monitor
+    details: Export graphs as PNG/SVG/PDF reports. Real-time WebSocket monitoring with browser notifications for live transaction tracking.
+    link: /api/components
+    linkText: API Reference
 ---
 
 <div style="max-width: 900px; margin: 2rem auto 0; padding: 0 24px;">

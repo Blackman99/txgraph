@@ -192,6 +192,273 @@ const nextConfig = {
 module.exports = nextConfig
 ```
 
+## Advanced Features
+
+### Search and Filtering
+
+Add search and filtering capabilities to your graph:
+
+```tsx
+import { GraphControlPanel, GraphExplorer } from '@trustin/txgraph'
+import { useState } from 'react'
+
+export function AdvancedGraph() {
+  const [originalNodes, setOriginalNodes] = useState(nodes)
+  const [originalEdges, setOriginalEdges] = useState(edges)
+  const [filteredNodes, setFilteredNodes] = useState(nodes)
+  const [filteredEdges, setFilteredEdges] = useState(edges)
+  const [selectedNode, setSelectedNode] = useState(null)
+
+  return (
+    <div style={{ display: 'flex', gap: '16px', height: '600px' }}>
+      {/* Main graph */}
+      <div style={{ flex: 1 }}>
+        <GraphExplorer 
+          nodes={filteredNodes} 
+          edges={filteredEdges}
+          selectedAddress={selectedNode?.address}
+          onNodeSelect={setSelectedNode}
+        />
+      </div>
+      
+      {/* Control panel */}
+      <div style={{ width: '320px' }}>
+        <GraphControlPanel
+          nodes={originalNodes}
+          edges={originalEdges}
+          onNodeSelect={setSelectedNode}
+          onFilterChange={(nodes, edges) => {
+            setFilteredNodes(nodes)
+            setFilteredEdges(edges)
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### Export Functionality
+
+Add export capabilities to save graphs in multiple formats:
+
+```tsx
+import { ExportToolbar, GraphExplorer } from '@trustin/txgraph'
+import { useRef } from 'react'
+
+export function ExportableGraph() {
+  const containerRef = useRef(null)
+
+  return (
+    <div ref={containerRef} style={{ height: '600px', position: 'relative' }}>
+      <GraphExplorer nodes={nodes} edges={edges} />
+      
+      {/* Export toolbar in top-right */}
+      <div style={{ position: 'absolute', top: 16, right: 16 }}>
+        <ExportToolbar
+          nodes={nodes}
+          edges={edges}
+          stats={stats}
+          containerRef={containerRef}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### Cluster Analysis
+
+Detect patterns and anomalies in your transaction graphs:
+
+```tsx
+import { ClusterAnalysis, GraphExplorer } from '@trustin/txgraph'
+import { useState } from 'react'
+
+export function AnalyticalGraph() {
+  const [highlightedNodes, setHighlightedNodes] = useState([])
+  const [selectedCluster, setSelectedCluster] = useState(null)
+
+  const processedNodes = nodes.map(node => ({
+    ...node,
+    // Highlight nodes based on cluster selection or anomalies
+    isHighlighted: highlightedNodes.includes(node.address)
+  }))
+
+  return (
+    <div style={{ display: 'flex', gap: '16px', height: '600px' }}>
+      <div style={{ flex: 1 }}>
+        <GraphExplorer 
+          nodes={processedNodes} 
+          edges={edges}
+          selectedAddress={selectedCluster?.centroid}
+        />
+      </div>
+      
+      <div style={{ width: '320px' }}>
+        <ClusterAnalysis
+          nodes={nodes}
+          edges={edges}
+          onClusterSelect={setSelectedCluster}
+          onHighlightNodes={setHighlightedNodes}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### Real-Time Monitoring
+
+Monitor live transaction updates:
+
+```tsx
+import { RealTimeManager, GraphExplorer } from '@trustin/txgraph'
+import { useState, useCallback } from 'react'
+
+export function LiveGraph() {
+  const [nodes, setNodes] = useState(initialNodes)
+  const [edges, setEdges] = useState(initialEdges)
+  const [watchList, setWatchList] = useState([
+    '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+  ])
+
+  const handleRealTimeUpdate = useCallback((update) => {
+    switch (update.type) {
+      case 'new_transaction':
+        // Add new transaction to graph
+        console.log('New transaction:', update.data)
+        break
+      case 'risk_update':
+        // Update node risk level
+        setNodes(prev => prev.map(node => 
+          node.address === update.address 
+            ? { ...node, risk_level: update.data.riskLevel }
+            : node
+        ))
+        break
+    }
+  }, [])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '600px' }}>
+      <div style={{ flex: 1 }}>
+        <GraphExplorer nodes={nodes} edges={edges} />
+      </div>
+      
+      <div style={{ height: '200px', borderTop: '1px solid #e5e7eb' }}>
+        <RealTimeManager
+          wsUrl="wss://api.example.com/ws"
+          watchedAddresses={watchList}
+          onUpdate={handleRealTimeUpdate}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### Complete Integration Example
+
+Combine all features for a comprehensive transaction analysis dashboard:
+
+```tsx
+import { 
+  GraphExplorer, GraphControlPanel, ClusterAnalysis, 
+  RealTimeManager, ExportToolbar 
+} from '@trustin/txgraph'
+import { useState, useRef, useCallback } from 'react'
+
+export function ComprehensiveDashboard() {
+  const containerRef = useRef(null)
+  const [originalData, setOriginalData] = useState({ nodes, edges, stats })
+  const [filteredData, setFilteredData] = useState({ nodes, edges })
+  const [selectedNode, setSelectedNode] = useState(null)
+  const [highlightedNodes, setHighlightedNodes] = useState([])
+
+  const handleRealTimeUpdate = useCallback((update) => {
+    // Handle real-time updates
+    if (update.type === 'new_transaction') {
+      // Update graph data
+      console.log('Live update:', update)
+    }
+  }, [])
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '16px', height: '100vh', padding: '16px' }}>
+      {/* Main graph area */}
+      <div ref={containerRef} style={{ position: 'relative', minHeight: 0 }}>
+        <GraphExplorer 
+          nodes={filteredData.nodes}
+          edges={filteredData.edges}
+          stats={originalData.stats}
+          selectedAddress={selectedNode?.address}
+          onNodeSelect={setSelectedNode}
+        />
+        
+        {/* Export toolbar */}
+        <div style={{ position: 'absolute', top: 16, right: 16 }}>
+          <ExportToolbar
+            nodes={originalData.nodes}
+            edges={originalData.edges}
+            stats={originalData.stats}
+            containerRef={containerRef}
+          />
+        </div>
+      </div>
+
+      {/* Control sidebar */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
+        {/* Search and filter controls */}
+        <GraphControlPanel
+          nodes={originalData.nodes}
+          edges={originalData.edges}
+          stats={originalData.stats}
+          onNodeSelect={setSelectedNode}
+          onFilterChange={(nodes, edges) => setFilteredData({ nodes, edges })}
+        />
+
+        {/* Cluster analysis */}
+        <ClusterAnalysis
+          nodes={originalData.nodes}
+          edges={originalData.edges}
+          onClusterSelect={(cluster) => {
+            if (cluster) {
+              setSelectedNode(originalData.nodes.find(n => n.address === cluster.centroid))
+            }
+          }}
+          onHighlightNodes={setHighlightedNodes}
+        />
+
+        {/* Real-time monitoring */}
+        <RealTimeManager
+          watchedAddresses={originalData.nodes.filter(n => n.is_root).map(n => n.address)}
+          onUpdate={handleRealTimeUpdate}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
 ## TypeScript
 
 Full TypeScript support is included. See [Types Reference](/api/types) for all exported interfaces.
+
+## Performance Tips
+
+### Large Graphs
+- Use `GraphExplorerSigma` for 500+ nodes (WebGL acceleration)
+- Implement virtualization for very large datasets
+- Consider data pagination or streaming for massive graphs
+
+### Optimization
+- Memoize expensive computations with `useMemo`
+- Debounce search and filter inputs
+- Use `React.memo` for static components
+- Implement proper cleanup for WebSocket connections
+
+### Memory Management
+- Clean up WebSocket connections on unmount
+- Avoid storing large graphs in React state unnecessarily
+- Use refs for DOM-heavy operations
