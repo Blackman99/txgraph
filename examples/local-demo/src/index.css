@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix button inheritance issues */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+/* Loading animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { 
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation for smooth transitions */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale up animation for interactive elements */
+@keyframes scaleIn {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Apply fade-in to main content areas */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Hide ALL original export toolbars */
+.react-flow__panel-top.react-flow__panel-right,
+.react-flow__panel.react-flow__panel-top.react-flow__panel-right,
+[class*="export"],
+[class*="Export"],
+.relative[style*="top"][style*="right"],
+div[style*="position: absolute"][style*="top: 10px"][style*="right: 10px"],
+div[style*="position:absolute"][style*="top:10px"][style*="right:10px"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Sigma export panels */
+.sigma-container .export-panel,
+.sigma-export-toolbar,
+.sigma-container [class*="export"],
+.sigma-container [class*="Export"] {
+  display: none !important;
+}
+

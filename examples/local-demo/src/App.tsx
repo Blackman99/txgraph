@@ -1,9 +1,16 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { GraphExplorer, GraphExplorerSigma } from '@trustin/txgraph'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import { 
+  GraphExplorer,
+  GraphExplorerSigma,
+  GraphControlPanel,
+  ClusterAnalysis,
+  RealTimeManager
+} from '@trustin/txgraph'
 import type { TxNode, TxGraph } from '@trustin/txgraph'
 import { SUPPORTED_CHAINS, type ChainName } from '@trustin/txgraph-core'
 import { exploreGraph, expandNode } from './api'
 import type { DataSourceType } from './api'
+import { SimpleExportButton } from './SimpleExportButton'
 
 type Renderer = 'reactflow' | 'sigma'
 
@@ -67,6 +74,7 @@ function useQueryParams() {
 
 export default function App() {
   const qp = useQueryParams()
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isDark, setIsDark] = useState(true)
   const [address, setAddress] = useState(qp.address)
   const [chain, setChain] = useState<ChainName>(qp.chain as ChainName || (detectChain(qp.address) ?? 'Ethereum'))
@@ -80,9 +88,17 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [expandingNode, setExpandingNode] = useState<string | null>(null)
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null)
+  const [selectedNode, setSelectedNode] = useState<TxNode | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [annotations, setAnnotations] = useState<Record<string, string>>({})
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [highlightedNodes, setHighlightedNodes] = useState<string[]>([])
+  const [watchList, setWatchList] = useState<string[]>([])
+  const [realTimeEnabled, setRealTimeEnabled] = useState(false)
+
+  // Filtered data for advanced features
+  const [filteredNodes, setFilteredNodes] = useState<TxNode[]>([])
+  const [filteredEdges, setFilteredEdges] = useState<any[]>([])
 
   useEffect(() => {
     if (isDark) {
@@ -94,45 +110,57 @@ export default function App() {
 
   const c = themeColors(isDark)
 
-  const exportJSON = useCallback(() => {
-    if (!graph) return
-    const blob = new Blob([JSON.stringify(graph, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'txgraph.json'
-    a.click()
-    URL.revokeObjectURL(url)
+  // Initialize filtered data when graph changes
+  useEffect(() => {
+    if (graph) {
+      setFilteredNodes(graph.nodes)
+      setFilteredEdges(graph.edges)
+      // Add root addresses to watch list for real-time monitoring
+      const rootAddresses = graph.nodes.filter(n => n.is_root).map(n => n.address)
+      setWatchList(rootAddresses)
+    }
   }, [graph])
 
-  const exportCSV = useCallback(() => {
-    if (!graph) return
-    const header = 'from,to,direction,amount,formatted_amount,token,tx_count,last_timestamp\n'
-    const rows = graph.edges.map(e =>
-      [e.from, e.to, e.direction, e.amount, `"${e.formatted_amount}"`, e.token || '', e.tx_count ?? '', e.last_timestamp].join(',')
-    ).join('\n')
-    const blob = new Blob([header + rows], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'txgraph.csv'
-    a.click()
-    URL.revokeObjectURL(url)
+  // Handle real-time updates
+  const handleRealTimeUpdate = useCallback((update: any) => {
+    console.log('Real-time update:', update)
+    // Handle different types of updates
+    switch (update.type) {
+      case 'new_transaction':
+        // Could extend graph with new transaction
+        break
+      case 'risk_update':
+        // Update node risk levels
+        setFilteredNodes(prev => prev.map(node => 
+          node.address === update.address 
+            ? { ...node, risk_level: update.data?.riskLevel || node.risk_level }
+            : node
+        ))
+        break
+    }
+  }, [])
+
+  // Handle filter changes from GraphControlPanel
+  const handleFilterChange = useCallback((nodes: TxNode[], edges: any[]) => {
+    setFilteredNodes(nodes)
+    setFilteredEdges(edges)
+  }, [])
+
+  // Handle cluster selection
+  const handleClusterSelect = useCallback((cluster: any) => {
+    if (cluster && graph) {
+      const centroidNode = graph.nodes.find(n => n.address === cluster.centroid)
+      if (centroidNode) {
+        setSelectedNode(centroidNode)
+        setSelectedAddress(cluster.centroid)
+      }
+    }
   }, [graph])
 
-  const exportPNG = useCallback(() => {
-    // Capture the graph container as PNG via canvas
-    const container = document.querySelector('.react-flow, .sigma-container')?.closest('[style]')?.parentElement
-    if (!container) return
-    import('html-to-image').then(({ toPng }) => {
-      toPng(container as HTMLElement, { backgroundColor: isDark ? '#0f172a' : '#f8fafc' }).then(dataUrl => {
-        const a = document.createElement('a')
-        a.href = dataUrl
-        a.download = 'txgraph.png'
-        a.click()
-      }).catch(console.error)
-    }).catch(console.error)
-  }, [isDark])
+  // Handle node highlighting from cluster analysis
+  const handleHighlightNodes = useCallback((addresses: string[]) => {
+    setHighlightedNodes(addresses)
+  }, [])
 
   const LARGE_GRAPH_THRESHOLD = 200
 
@@ -143,16 +171,11 @@ export default function App() {
     }
   }, [graph])
 
-  // Search within graph: find first matching node by address or ENS tag
-  const handleSearch = useCallback(() => {
-    if (!graph || !searchQuery.trim()) return
-    const q = searchQuery.trim().toLowerCase()
-    const match = graph.nodes.find(n =>
-      n.address.toLowerCase().includes(q) ||
-      n.tags.some(t => (t.name || '').toLowerCase().includes(q))
-    )
-    if (match) setSelectedAddress(match.address)
-  }, [graph, searchQuery])
+  // Handle node selection with enhanced state management
+  const handleNodeSelect = useCallback((node: TxNode | null) => {
+    setSelectedAddress(node?.address ?? null)
+    setSelectedNode(node)
+  }, [])
 
   // Extract unique token symbols from graph edges for dynamic filtering
   const availableTokens = useMemo(() => {
@@ -163,6 +186,14 @@ export default function App() {
     }
     return Array.from(tokens).sort()
   }, [graph])
+
+  // Process nodes with highlighting for cluster analysis
+  const processedNodes = useMemo(() => {
+    return filteredNodes.map(node => ({
+      ...node,
+      isHighlighted: highlightedNodes.includes(node.address)
+    }))
+  }, [filteredNodes, highlightedNodes])
 
   const handleExplore = useCallback(async () => {
     // Clear query params after first explore to avoid re-triggering
@@ -235,9 +266,6 @@ export default function App() {
     if (selectedAddress === addr) setSelectedAddress(null)
   }, [graph, selectedAddress])
 
-  const handleNodeSelect = useCallback((node: TxNode | null) => {
-    setSelectedAddress(node?.address ?? null)
-  }, [])
 
   const inputStyle: React.CSSProperties = {
     padding: '6px 10px',
@@ -263,7 +291,7 @@ export default function App() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: c.bg, color: c.text }}>
       {/* Header */}
       <div style={{ padding: '12px 16px', borderBottom: `1px solid ${c.border}`, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: c.heading, marginRight: 8 }}>TxGraph Demo</span>
+        <span className="text-lg font-bold mr-2 bg-blue-500 text-white px-2 py-1 rounded">TxGraph Demo</span>
 
         {/* Address input */}
         <input
@@ -405,8 +433,10 @@ export default function App() {
         </div>
       )}
 
-      {/* Graph area */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* Main content area */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Graph area */}
+        <div ref={containerRef} style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {!graph && !loading && (
           <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: c.dimmed }}>
             <div style={{ fontSize: 48 }}>🔍</div>
@@ -416,12 +446,63 @@ export default function App() {
             </div>
           </div>
         )}
-        {(graph || loading) && (
-          <div style={{ height: '100%' }}>
+        
+        {loading && !graph && (
+          <div style={{ 
+            height: '100%', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: 20, 
+            color: c.text 
+          }}>
+            {/* Animated loading spinner */}
+            <div style={{
+              width: 60,
+              height: 60,
+              border: `4px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+              borderTop: '4px solid #3b82f6',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+            
+            <div style={{ textAlign: 'center', gap: 8, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 16, fontWeight: 600, color: c.heading }}>
+                Exploring Transaction Graph
+              </div>
+              <div style={{ fontSize: 13, color: c.muted }}>
+                Analyzing blockchain transactions for {address.slice(0, 6)}...{address.slice(-4)}
+              </div>
+              <div style={{ fontSize: 12, color: c.dimmed }}>
+                Using {dataSource === 'trustin' ? 'TrustIn API' : `${chain === 'Tron' ? 'Tronscan' : chain === 'BSC' ? 'BscScan' : chain === 'Polygon' ? 'PolygonScan' : chain === 'Arbitrum' ? 'Arbiscan' : 'Etherscan'} API`}
+              </div>
+            </div>
+            
+            {/* Progress dots animation */}
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[0, 1, 2].map(i => (
+                <div
+                  key={i}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: '#3b82f6',
+                    animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite`
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        {graph && !loading && (
+          <div className="fade-in" style={{ height: '100%', position: 'relative' }}>
+            {/* Original graph components without custom wrapper */}
             {renderer === 'reactflow' ? (
               <GraphExplorer
-                nodes={graph?.nodes ?? []}
-                edges={graph?.edges ?? []}
+                nodes={processedNodes}
+                edges={filteredEdges}
                 stats={graph?.stats}
                 loading={loading}
                 expandingNode={expandingNode}
@@ -432,8 +513,8 @@ export default function App() {
               />
             ) : (
               <GraphExplorerSigma
-                nodes={graph?.nodes ?? []}
-                edges={graph?.edges ?? []}
+                nodes={processedNodes}
+                edges={filteredEdges}
                 stats={graph?.stats}
                 loading={loading}
                 expandingNode={expandingNode}
@@ -443,12 +524,27 @@ export default function App() {
                 onNodeDelete={handleNodeDelete}
               />
             )}
+
+            {/* Direct export button overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              zIndex: 10000
+            }}>
+              <SimpleExportButton 
+                nodes={graph.nodes}
+                edges={graph.edges}
+                stats={graph.stats}
+                containerRef={containerRef}
+              />
+            </div>
           </div>
         )}
 
         {/* Renderer toggle overlay */}
-        {(graph || loading) && (
-          <div style={{
+        {graph && (
+          <div className="scale-in" style={{
             position: 'absolute',
             top: 10,
             left: 10,
@@ -465,57 +561,83 @@ export default function App() {
           </div>
         )}
 
-        {/* Search within graph */}
-        {graph && (
-          <div style={{
-            position: 'absolute',
-            top: 10,
-            left: '50%',
-            transform: 'translateX(-50%)',
+
+        </div>
+
+        {/* Advanced features sidebar */}
+        {graph && showAdvanced && (
+          <div className="fade-in" style={{
+            width: '360px',
+            borderLeft: `1px solid ${c.border}`,
+            background: c.bg,
             display: 'flex',
-            gap: 4,
-            background: c.overlayBg,
-            borderRadius: 6,
-            border: `1px solid ${c.border}`,
-            padding: 2,
-            zIndex: 10,
+            flexDirection: 'column',
+            overflow: 'hidden'
           }}>
-            <input
-              type="text"
-              placeholder="Search address or ENS…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              style={{ ...inputStyle, fontSize: 12, minWidth: 180, padding: '4px 8px' }}
-            />
-            <button onClick={handleSearch} style={{ ...btnStyle(false), padding: '4px 10px', fontSize: 12 }}>Find</button>
+            {/* Control Panel - Search and Filters */}
+            <div style={{ flex: '0 0 auto', borderBottom: `1px solid ${c.border}` }}>
+              <GraphControlPanel
+                nodes={graph.nodes}
+                edges={graph.edges}
+                stats={graph.stats}
+                onNodeSelect={handleNodeSelect}
+                onFilterChange={handleFilterChange}
+              />
+            </div>
+
+            {/* Cluster Analysis */}
+            <div style={{ flex: '1 1 0', minHeight: 0, borderBottom: `1px solid ${c.border}` }}>
+              <ClusterAnalysis
+                nodes={graph.nodes}
+                edges={graph.edges}
+                onClusterSelect={handleClusterSelect}
+                onHighlightNodes={handleHighlightNodes}
+              />
+            </div>
+
+            {/* Real-time Monitoring */}
+            <div style={{ flex: '0 0 200px', overflow: 'auto' }}>
+              <RealTimeManager
+                watchedAddresses={watchList}
+                onUpdate={handleRealTimeUpdate}
+                enabled={realTimeEnabled}
+              />
+            </div>
           </div>
         )}
 
-        {/* Export buttons */}
+        {/* Toggle advanced features */}
         {graph && (
-          <div style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            display: 'flex',
-            gap: 2,
-            background: c.overlayBg,
-            borderRadius: 6,
-            border: `1px solid ${c.border}`,
-            padding: 2,
-            zIndex: 10,
-          }}>
-            <button onClick={exportPNG} style={btnStyle(false)} title="Export as PNG">PNG</button>
-            <button onClick={exportJSON} style={btnStyle(false)} title="Export as JSON">JSON</button>
-            <button onClick={exportCSV} style={btnStyle(false)} title="Export as CSV">CSV</button>
-          </div>
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: showAdvanced ? '360px' : '0px',
+              transform: 'translateY(-50%)',
+              background: c.surface,
+              border: `1px solid ${c.border}`,
+              borderRight: showAdvanced ? 'none' : undefined,
+              borderLeft: showAdvanced ? undefined : 'none',
+              borderRadius: showAdvanced ? '6px 0 0 6px' : '0 6px 6px 0',
+              padding: '12px 4px',
+              cursor: 'pointer',
+              fontSize: 14,
+              color: c.muted,
+              zIndex: 20,
+              transition: 'all 0.3s ease-in-out',
+              boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            title={showAdvanced ? 'Hide advanced features' : 'Show advanced features'}
+          >
+            {showAdvanced ? '▶' : '◀'}
+          </button>
         )}
       </div>
 
       {/* Selected node info panel */}
       {selectedAddress && graph && (
-        <div style={{ padding: '10px 16px', borderTop: `1px solid ${c.border}`, background: c.bg, fontSize: 12 }}>
+        <div className="scale-in" style={{ padding: '10px 16px', borderTop: `1px solid ${c.border}`, background: c.bg, fontSize: 12 }}>
           {(() => {
             const node = graph.nodes.find((n) => n.address === selectedAddress)
             if (!node) return null
@@ -538,10 +660,27 @@ export default function App() {
                   style={{ ...inputStyle, fontSize: 11, padding: '2px 8px', minWidth: 120 }}
                 />
                 <button
-                  onClick={() => setSelectedAddress(null)}
+                  onClick={() => {
+                    setSelectedAddress(null)
+                    setSelectedNode(null)
+                  }}
                   style={{ marginLeft: 'auto', padding: '2px 8px', borderRadius: 4, border: `1px solid ${c.border}`, background: 'transparent', color: c.dimmed, cursor: 'pointer', fontSize: 11 }}
                 >
                   Close
+                </button>
+                <button
+                  onClick={() => setRealTimeEnabled(!realTimeEnabled)}
+                  style={{ 
+                    padding: '2px 8px', 
+                    borderRadius: 4, 
+                    border: `1px solid ${c.border}`, 
+                    background: realTimeEnabled ? '#3b82f6' : 'transparent', 
+                    color: realTimeEnabled ? '#fff' : c.dimmed, 
+                    cursor: 'pointer', 
+                    fontSize: 11 
+                  }}
+                >
+                  {realTimeEnabled ? '\u23f8 Stop Monitor' : '\u25b6 Monitor'}
                 </button>
               </div>
             )
