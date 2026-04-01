@@ -10,7 +10,7 @@
   <img src="docs/public/hero-features.svg" alt="TxGraph feature overview" width="800" />
 </p>
 
-## [Live Demo](https://blackman99.github.io/txgraph/demo/)
+## [Live Demo](https://width-risk-comliance-database.github.io/txgraph/demo/)
 
 ## Features
 
@@ -114,14 +114,14 @@ pnpm dev:docs
 
 | Layer | Description | Link |
 |-------|-------------|------|
-| **Layer 1** | Use TrustIn Online Explorer at [v2.trustin.info](https://v2.trustin.info/explore) | [Guide](https://blackman99.github.io/txgraph/guide/layer1-product) |
-| **Layer 2** | AI Agent API — self-register and trace addresses | [Guide](https://blackman99.github.io/txgraph/guide/layer2-agent) |
-| **Layer 3** | Run the demo locally with your own API key | [Guide](https://blackman99.github.io/txgraph/guide/layer3-demo) |
-| **Layer 4** | Install `@trustin/txgraph` and build your own UI | [Guide](https://blackman99.github.io/txgraph/guide/layer4-component) |
+| **Layer 1** | Use TrustIn Online Explorer at [v2.trustin.info](https://v2.trustin.info/explore) | [Guide](https://width-risk-comliance-database.github.io/txgraph/guide/layer1-product) |
+| **Layer 2** | AI Agent API — self-register and trace addresses | [Guide](https://width-risk-comliance-database.github.io/txgraph/guide/layer2-agent) |
+| **Layer 3** | Run the demo locally with your own API key | [Guide](https://width-risk-comliance-database.github.io/txgraph/guide/layer3-demo) |
+| **Layer 4** | Install `@trustin/txgraph` and build your own UI | [Guide](https://width-risk-comliance-database.github.io/txgraph/guide/layer4-component) |
 
 ## Documentation
 
-Full documentation: [blackman99.github.io/txgraph](https://blackman99.github.io/txgraph/)
+Full documentation: [width-risk-comliance-database.github.io/txgraph](https://width-risk-comliance-database.github.io/txgraph/)
 
 ## License
 

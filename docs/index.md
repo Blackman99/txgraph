@@ -13,7 +13,7 @@ hero:
       link: /guide/layer1-product
     - theme: alt
       text: View on GitHub
-      link: https://github.com/Blackman99/txgraph
+      link: https://github.com/Width-Risk-Comliance-Database/txgraph
 
 features:
   - icon: 🌐

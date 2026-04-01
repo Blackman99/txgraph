@@ -14,7 +14,7 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/layer1-product' },
       { text: 'API', link: '/api/components' },
       { text: 'Demo', link: '/demo/', target: '_self' },
-      { text: 'GitHub', link: 'https://github.com/Blackman99/txgraph' },
+      { text: 'GitHub', link: 'https://github.com/Width-Risk-Comliance-Database/txgraph' },
     ],
     sidebar: [
       {
@@ -42,7 +42,7 @@ export default defineConfig({
       copyright: 'Copyright © 2024 TrustIn',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/Blackman99/txgraph' },
+      { icon: 'github', link: 'https://github.com/Width-Risk-Comliance-Database/txgraph' },
     ],
   },
 })

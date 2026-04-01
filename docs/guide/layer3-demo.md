@@ -15,7 +15,7 @@ You can also try the <a href="/txgraph/demo/" target="_self">Live Demo</a> direc
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/Blackman99/txgraph.git
+git clone https://github.com/Width-Risk-Comliance-Database/txgraph.git
 cd txgraph
 
 # 2. Install dependencies
